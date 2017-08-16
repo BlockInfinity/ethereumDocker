@@ -111,7 +111,7 @@ RUN echo 'echo "\n\
 
 
 # ENTRYPOINT tmux new -s Session1 -n "console" \; new-window -n "testrpc" 'testrpc -d 0.0.0.0 --accounts 100 --gasLimit 0x7A1200' \; new-window -n 'api' 'swagger project start ./swagger' \;  new-window -n "mysql" 'mysql -uroot -pmypassword -h 172.17.0.2 -P 3306' \; new-window -n "console" 
-ENTRYPOINT tmux new -s Session1 -n "console"\;  new-window -n "mysql" 'mysql -uroot -pmypassword -h mysqlName -P 3306' \; new-window -n "console" \; new-window -n 'api' \
+ENTRYPOINT tmux new -s Session1 -n "console"\; new-window -n "cloud9" 'c9.sh'   new-window -n "mysql" 'mysql -uroot -pmypassword -h mysqlName -P 3306' \; new-window -n "console" \; new-window -n 'api' \
 "figlet Blockinfinity Karlsruhe && \
 echo -e '\n \n ############### Deploy Contracts ############### \n \n'  && \
 cd /src/truffle/ && truffle deploy --network container && \
@@ -120,7 +120,7 @@ truffle test --network container && cd /src/swagger && \
 echo -e '\n \n ############### Test Api ############### \n \n'  && \
 swagger project test && \
 echo -e '\n \n ############### Run Api ############### \n \n'  && \
-swagger project start" \; new-window 'c9.sh'  
+swagger project start" \;  
 
 # Start user in their source code directory...
 WORKDIR /src
