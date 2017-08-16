@@ -24,6 +24,24 @@ RUN apt-get install -y libssl-dev
 # # Install tmux to gain split screen management and screen sharing capabilities
 RUN apt-get install -y tmux
 
+
+# Add Cloud9 for pair programming & IDE, in addition to tmux
+WORKDIR /opt
+RUN git clone git://github.com/c9/core.git cloud9
+WORKDIR /opt/cloud9
+RUN scripts/install-sdk.sh
+# patch for solidty syntax
+ADD patches/c9/node_modules/ace/lib/ace/ext/modelist.js /opt/cloud9/node_modules/ace/lib/ace/ext/modelist.js
+ADD patches/c9/node_modules/ace/lib/ace/mode/solidity.js /opt/cloud9/node_modules/ace/lib/ace/mode/solidity.js
+ADD patches/c9/node_modules/ace/lib/ace/mode/solidity_highlight_rules.js /opt/cloud9/node_modules/ace/lib/ace/mode/solidity_highlight_rules.js
+ADD patches/c9/node_modules/ace/lib/ace/snippets/solidity.js /opt/cloud9/node_modules/ace/lib/ace/snippets/solidity.js
+# make C9 server runnable (user needs to run $ c9.sh to launch platform)
+RUN mkdir /opt/cloud9/workspace
+WORKDIR /opt/cloud9/workspace
+RUN ln -s /src src
+RUN echo 'cd /opt/cloud9;node server.js --collab -p 8181  --listen 0.0.0.0 -a : -w /opt/cloud9/workspace' > /usr/local/bin/c9.sh
+RUN chmod ugo+x /usr/local/bin/c9.sh
+
 # Install testrpc and Truffle directly from github as PIP and NPM not regularly
 # updated (e.g. make sure we have latest version solc)
 # ethereumjs-testrpc
@@ -102,7 +120,7 @@ truffle test --network container && cd /src/swagger && \
 echo -e '\n \n ############### Test Api ############### \n \n'  && \
 swagger project test && \
 echo -e '\n \n ############### Run Api ############### \n \n'  && \
-swagger project start" 
+swagger project start" \; new-window 'c9.sh'  
 
 # Start user in their source code directory...
 WORKDIR /src
