@@ -1,0 +1,37 @@
+Running tests in: /src/swagger/test...
+
+
+ConvertLib with address  0x3189eb8685fa417761e216be9dae467186f7d78f  is loaded.
+MetaCoin with address  0xb639b6fa3cc13f601dd1c74040d5db21344059b6  is loaded.
+Migrations with address  undefined  is loaded.
+
+
+
+
+  1) Uncaught error outside test suite
+  Testing Metacoin
+{ account: '0x53a291e1a451807a243a49297c1e874d0edde6f5',
+  convertlib: '0x3189eb8685fa417761e216be9dae467186f7d78f',
+  metacoin: '0xb639b6fa3cc13f601dd1c74040d5db21344059b6' }
+    ✓  test  (254ms)
+
+
+  1 passing (325ms)
+  1 failing
+
+  1)  Uncaught error outside test suite:
+     Uncaught Error: listen EADDRINUSE :::8080
+      at Object.exports._errnoException (util.js:1050:11)
+      at exports._exceptionWithHostPort (util.js:1073:20)
+      at Server.setupListenHandle [as _listen2] (net.js:1259:14)
+      at listenInCluster (net.js:1307:12)
+      at Server.listen (net.js:1406:7)
+      at app.js:55:10
+      at node_modules/swagger-tools/index.js:84:7
+      at cbWrapper (node_modules/swagger-tools/lib/specs.js:1035:5)
+      at validateSwagger2_0 (node_modules/swagger-tools/lib/specs.js:1030:3)
+      at validateSemantically (node_modules/swagger-tools/lib/specs.js:1040:5)
+
+
+
+1

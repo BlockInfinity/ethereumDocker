@@ -1,0 +1,59 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Swagger API
+# during dev, should point to your local machine
+host: localhost:8080
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+
+  /info/getAccounts:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: info
+    get:
+      tags:
+        - info
+        
+      description: " "
+      # used as the method name of the controller
+      operationId: getAccounts
+      responses:
+        '200':
+          description: test
+          schema:
+            type: object
+            properties:
+              account:
+                type: string
+              convertlib:
+                type: string
+              metacoin:
+                type: string
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"                                                                                           
+                                                                                  
+
+
+# complex objects have schema definitions
+definitions:
+  ErrorResponse:
+    type: object    
+    properties:
+      message:
+        type: string
+
