@@ -1,5 +1,5 @@
 
-# Authority Modell (Work in progress)
+# Ethereum Template (Work in progress)
 
 * Falls Docker installiert ist, initial folgenden Befehl ausführen: 
 
@@ -32,10 +32,10 @@ cd /src/truffle/ ; truffle test --network container
 cd /src/swagger ; swagger project test
 ```
 
-* contracts können folgendermapen deployed werden:
+* contracts können folgendermaßen deployed werden:
 
 ~~~
-truffle deploy --network container
+cd /src/swagger ; truffle deploy --network container
 ~~~
 
 * Beim Start werden automatisch alle truffle und api tests ausgeführt. 
