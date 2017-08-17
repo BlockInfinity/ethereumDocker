@@ -5,16 +5,17 @@ RUN apt-get update
 RUN apt-get upgrade -q -y
 RUN apt-get dist-upgrade -q -y
 
-RUN apt-get -y install software-properties-common
+
+RUN apt-get update
+RUN sudo apt-get -y install software-properties-common
 RUN add-apt-repository ppa:ethereum/ethereum
 RUN add-apt-repository ppa:ethereum/ethereum-dev
-RUN apt-get update
 RUN apt-get -y install ethereum solc 
 
 RUN apt-get install -y python-pip python-dev libyaml-dev libssl-dev
-
-
 RUN apt-get install -y sudo
+
+
 
 RUN apt-get install -y curl
 
