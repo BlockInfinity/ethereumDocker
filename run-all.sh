@@ -10,8 +10,8 @@ sudo docker run --detach -it -p 8545:8545 --name testrpcName mgsgde/testrpc
 
 
 # Authority Container (swagger api, truffle and mysql)
-pathTruffle="$(pwd)/truffle"
-pathSwagger="$(pwd)/swagger"
+pathTruffle="/home/mgsgde/template_eth/truffle"
+pathSwagger="/home/mgsgde/template_eth/swagger"
 
 sudo docker rm -f truffleAndAPIName
 sudo docker run -d --link mysqlName:mysql --link testrpcName:mgsgde/testrpc --name truffleAndAPIName -v $pathTruffle:/src/truffle/ -v $pathSwagger:/src/swagger -it -p 8081:8081 -p 2222:2222 -p 8080:8080 -p 8181:8181 mgsgde/truffleandapi
