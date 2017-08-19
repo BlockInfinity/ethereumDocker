@@ -1,4 +1,4 @@
-node_modules/
+/node_modules/
 mysql_data/
 .node-xmlhttprequest*
 truffle/contracts/addresses.json
