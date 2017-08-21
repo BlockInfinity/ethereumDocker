@@ -1,3 +1,5 @@
+#!/bin/bash
 
-sudo docker rm -f mysqlName
-sudo docker run --detach --name=mysqlName --env="MYSQL_ROOT_PASSWORD=mypassword" mysql
+sudo docker build . -t mgsgde/mysql -f Dockerfile.mysql
+
+sudo ./run-mysql.sh

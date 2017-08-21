@@ -1,0 +1,5 @@
+FROM mysql
+
+# Copy the database schema to the container
+ADD volumes/dumps/dump.sql /docker-entrypoint-initdb.d/
+

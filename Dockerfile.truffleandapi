@@ -1,0 +1,125 @@
+FROM ubuntu:xenial
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update
+RUN apt-get upgrade -q -y
+RUN apt-get dist-upgrade -q -y
+
+RUN apt-get install -y apt-utils
+RUN apt-get install -y sudo
+RUN apt-get install -y figlet
+RUN apt-get install -y strace
+RUN apt-get install -y curl
+RUN apt-get install -y vim
+RUN apt-get install -y git
+
+RUN curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+RUN apt-get install -y nodejs
+RUN apt-get install -y python
+RUN apt-get install -y python-pip
+RUN apt-get install -y python-dev
+RUN apt-get install -y libssl-dev
+
+# # Install tmux to gain split screen management and screen sharing capabilities
+RUN apt-get install -y tmux
+
+
+# Add Cloud9 for pair programming & IDE, in addition to tmux
+WORKDIR /opt
+RUN git clone git://github.com/c9/core.git cloud9
+WORKDIR /opt/cloud9
+RUN scripts/install-sdk.sh
+# patch for solidty syntax
+ADD patches/c9/node_modules/ace/lib/ace/ext/modelist.js /opt/cloud9/node_modules/ace/lib/ace/ext/modelist.js
+ADD patches/c9/node_modules/ace/lib/ace/mode/solidity.js /opt/cloud9/node_modules/ace/lib/ace/mode/solidity.js
+ADD patches/c9/node_modules/ace/lib/ace/mode/solidity_highlight_rules.js /opt/cloud9/node_modules/ace/lib/ace/mode/solidity_highlight_rules.js
+ADD patches/c9/node_modules/ace/lib/ace/snippets/solidity.js /opt/cloud9/node_modules/ace/lib/ace/snippets/solidity.js
+# make C9 server runnable (user needs to run $ c9.sh to launch platform)
+RUN mkdir /opt/cloud9/workspace
+WORKDIR /opt/cloud9/workspace
+RUN ln -s /src src
+RUN echo 'cd /opt/cloud9;node server.js --collab -p 8181  --listen 0.0.0.0 -a : -w /opt/cloud9/workspace' > /usr/local/bin/c9.sh
+RUN chmod ugo+x /usr/local/bin/c9.sh
+
+# Install testrpc and Truffle directly from github as PIP and NPM not regularly
+# updated (e.g. make sure we have latest version solc)
+# ethereumjs-testrpc
+WORKDIR /tmp
+RUN git clone https://github.com/ethereumjs/testrpc.git
+WORKDIR /tmp/testrpc
+RUN npm install -g .
+# Truffle
+WORKDIR /tmp
+RUN git clone https://github.com/ConsenSys/truffle-default-builder.git
+RUN df -h
+WORKDIR /tmp/truffle-default-builder
+RUN npm install -g .
+WORKDIR /tmp
+RUN git clone https://github.com/ConsenSys/truffle.git
+WORKDIR /tmp/truffle
+RUN npm install -g .
+
+WORKDIR /src
+RUN npm install -g swagger
+RUN swagger project create -f express swagger
+
+WORKDIR /src/swagger
+ADD swagger /src/swagger
+RUN npm install chai
+RUN npm install co
+
+RUN npm install web3@0.18.2
+RUN npm install mysql
+RUN npm install superagent
+
+RUN mkdir -p truffle/build/contract
+WORKDIR /src/truffle
+
+RUN truffle init
+ADD truffle /src/truffle
+
+WORKDIR /src/truffle
+RUN npm install chai
+RUN npm install co
+
+RUN apt-get update && apt-get install -y mysql-client && rm -rf /var/lib/apt
+
+RUN echo 'figlet Blockinfinity Karlsruhe' >> /root/.bashrc
+
+ # Clean up APT when done.
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN echo 'echo "\n\
+ \n\
+ *** GET STARTED ***\n\
+ tmux is used to maintain concurrent windows. In window 1 we are running\n\
+ testrpc, which is a dummy blockchain for testing and development. In window 2\n\
+ we are running the swagger api which is accissble on socket http://localhost:8080/docs/\n\
+ In window 3 the mysql client is running. You are in window 4, which is a great place to build\n\
+ a Dapp. Note you can create a new window using ctrl-b c, and you can\n\
+ navigate to an existing window using ctrl-b <window>.\n\
+ \n\
+ BUILD PROCESS...\n\
+ Before the swagger api does work you need to deploy the contract from the truffle folder \n\
+ to the dummy blockchain via: \n\
+ \n\
+ cd truffle && truffle deploy\n\
+ \n\
+ "' >> /root/.bashrc
+
+
+
+# ENTRYPOINT tmux new -s Session1 -n "console" \; new-window -n "testrpc" 'testrpc -d 0.0.0.0 --accounts 100 --gasLimit 0x7A1200' \; new-window -n 'api' 'swagger project start ./swagger' \;  new-window -n "mysql" 'mysql -uroot -pmypassword -h 172.17.0.2 -P 3306' \; new-window -n "console" 
+ENTRYPOINT tmux new -s Session1 -n "console"\; new-window -n "cloud9" 'c9.sh' \; new-window -n "mysql" 'mysql -uroot -pmypassword -h mysqlName -P 3306' \; new-window -n "console" \; new-window -n 'api' \
+"figlet Blockinfinity Karlsruhe && \
+echo -e '\n \n ############### Deploy Contracts ############### \n \n'  && \
+cd /src/truffle/ && truffle deploy --network container && \
+echo -e '\n \n ############### Test Api ############### \n \n'  && \
+cd /src/swagger && swagger project test && \
+echo -e '\n \n ############### Run Api ############### \n \n'  && \
+swagger project start" \;  
+
+# Start user in their source code directory...
+WORKDIR /src
+
