@@ -1,4 +1,3 @@
-x
 # Ethereum Template (Work in progress)
 
 * Falls Docker installiert ist, initial folgenden Befehl ausführen: 
